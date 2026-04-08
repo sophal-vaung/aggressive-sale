@@ -1,0 +1,395 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{display:flex;height:100vh;min-height:700px;font-family:var(--font-sans);font-size:13px;background:var(--color-background-tertiary);}
+.sidebar{width:210px;flex-shrink:0;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.logo-name{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.logo-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:1px;}
+.role-pill{margin:12px 14px;padding:6px 10px;border-radius:var(--border-radius-md);display:flex;align-items:center;gap:8px;}
+.role-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.role-label{font-size:12px;font-weight:500;}
+.nav-section{padding:8px 0;}
+.nav-label{font-size:10px;font-weight:500;letter-spacing:0.07em;color:var(--color-text-tertiary);padding:6px 16px 4px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 16px;cursor:pointer;color:var(--color-text-secondary);border-left:2px solid transparent;transition:all .12s;}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary);}
+.nav-item.active{background:var(--color-background-info);color:var(--color-text-info);border-left-color:var(--color-border-info);}
+.nav-icon{width:14px;text-align:center;flex-shrink:0;font-size:12px;}
+.badge-count{margin-left:auto;background:var(--color-background-danger);color:var(--color-text-danger);font-size:10px;font-weight:500;padding:1px 6px;border-radius:99px;}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 22px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-title{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.topbar-actions{display:flex;align-items:center;gap:8px;}
+.btn-sm{font-size:12px;padding:5px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;}
+.btn-sm:hover{background:var(--color-background-secondary);}
+.btn-primary{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent;}
+.content{padding:20px 22px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+.metrics-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px;}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;}
+.metric-label{font-size:11px;color:var(--color-text-tertiary);margin-bottom:6px;}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.metric-sub{font-size:11px;margin-top:3px;}
+.ok{color:var(--color-text-success);}
+.warn{color:var(--color-text-warning);}
+.danger{color:var(--color-text-danger);}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:14px;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+th{text-align:left;font-size:11px;font-weight:500;color:var(--color-text-tertiary);padding:6px 10px;border-bottom:0.5px solid var(--color-border-tertiary);text-transform:uppercase;letter-spacing:0.05em;}
+td{padding:9px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--color-background-secondary);}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;}
+.pill-safe{background:#EAF3DE;color:#27500A;}
+.pill-warn{background:#FAEEDA;color:#633806;}
+.pill-breach{background:#FCEBEB;color:#791F1F;}
+.progress-bg{background:var(--color-background-secondary);border-radius:99px;height:5px;flex:1;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;transition:width .3s;}
+.fill-safe{background:#639922;}
+.fill-warn{background:#BA7517;}
+.fill-breach{background:#E24B4A;}
+.row-flex{display:flex;align-items:center;gap:8px;}
+.two-col{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;margin-bottom:14px;}
+.alert-item{display:flex;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:flex-start;}
+.alert-item:last-child{border-bottom:none;}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.alert-dot.breach{background:#E24B4A;}
+.alert-dot.warn{background:#BA7517;}
+.alert-meta{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+.alert-channel{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:99px;background:var(--color-background-secondary);color:var(--color-text-secondary);margin-left:6px;}
+.form-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:12px;color:var(--color-text-secondary);}
+input[type=text],input[type=number],select{padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;width:100%;}
+.role-switcher{display:flex;gap:6px;flex-wrap:wrap;}
+.role-btn{font-size:11px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;}
+.role-btn.selected{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent;}
+.divider-line{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:14px 0;}
+.co-row td:first-child{color:var(--color-text-secondary);}
+</style>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-name">AggressiveSales</div>
+      <div class="logo-sub">MFI Monitoring System</div>
+    </div>
+    <div style="padding:8px 14px 0;">
+      <div style="font-size:10px;color:var(--color-text-tertiary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em;">View as role</div>
+      <div class="role-switcher" id="role-switcher">
+        <button class="role-btn selected" onclick="setRole('crd',this)">CRD</button>
+        <button class="role-btn" onclick="setRole('bm',this)">BM</button>
+        <button class="role-btn" onclick="setRole('ceo',this)">CEO</button>
+      </div>
+    </div>
+    <div class="nav-section" id="nav" style="flex:1;overflow-y:auto;margin-top:4px;"></div>
+    <div style="padding:12px 14px;border-top:0.5px solid var(--color-border-tertiary);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-info);" id="avatar-initials">SR</div>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);" id="user-name">Sophea R.</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);" id="user-role-label">Credit Risk Dept.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="page-title">System dashboard</div>
+      <div class="topbar-actions">
+        <select style="font-size:12px;padding:4px 8px;width:auto;" id="date-filter"><option>This month</option><option>Last month</option><option>This quarter</option></select>
+        <button class="btn-sm">Export</button>
+        <button class="btn-sm btn-primary" id="primary-action">+ Add threshold</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- PAGE: Dashboard (CRD/CEO) -->
+      <div class="page active" id="page-dashboard">
+        <div class="metrics-row">
+          <div class="metric-card"><div class="metric-label">Total disbursement</div><div class="metric-value">$2.4M</div><div class="metric-sub warn">82% of threshold</div></div>
+          <div class="metric-card"><div class="metric-label">Active clients</div><div class="metric-value">1,284</div><div class="metric-sub ok">64% of threshold</div></div>
+          <div class="metric-card"><div class="metric-label">Branches in breach</div><div class="metric-value danger">3</div><div class="metric-sub danger">Out of 12 branches</div></div>
+          <div class="metric-card"><div class="metric-label">Alerts this month</div><div class="metric-value">18</div><div class="metric-sub" style="color:var(--color-text-tertiary);">9 via Telegram, 9 Email</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="section-title">Branch performance vs threshold</div>
+            <div class="table-wrap">
+              <table>
+                <colgroup><col style="width:28%"><col style="width:18%"><col style="width:36%"><col style="width:18%"></colgroup>
+                <thead><tr><th>Branch</th><th>Disbursement</th><th>vs Threshold</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>Phnom Penh</td><td>$680K</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-breach" style="width:95%"></div></div><span style="font-size:11px;color:var(--color-text-danger)">95%</span></div></td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+                  <tr><td>Siem Reap</td><td>$430K</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-warn" style="width:86%"></div></div><span style="font-size:11px;color:var(--color-text-warning)">86%</span></div></td><td><span class="status-pill pill-warn">Warning</span></td></tr>
+                  <tr><td>Battambang</td><td>$310K</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-safe" style="width:62%"></div></div><span style="font-size:11px;color:var(--color-text-success)">62%</span></div></td><td><span class="status-pill pill-safe">Safe</span></td></tr>
+                  <tr><td>Kampong Cham</td><td>$510K</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-breach" style="width:102%"></div></div><span style="font-size:11px;color:var(--color-text-danger)">102%</span></div></td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+                  <tr><td>Takeo</td><td>$190K</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-safe" style="width:38%"></div></div><span style="font-size:11px;color:var(--color-text-success)">38%</span></div></td><td><span class="status-pill pill-safe">Safe</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title">Recent alerts</div>
+            <div class="alert-item">
+              <div class="alert-dot breach"></div>
+              <div><div style="font-size:13px;">Kampong Cham — disbursement exceeded 100%</div><div class="alert-meta">Today, 09:14 AM<span class="alert-channel">Telegram</span><span class="alert-channel">Email</span></div></div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot breach"></div>
+              <div><div style="font-size:13px;">Phnom Penh CO Dara — client # limit (SCO)</div><div class="alert-meta">Yesterday, 4:30 PM<span class="alert-channel">Telegram</span></div></div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot warn"></div>
+              <div><div style="font-size:13px;">Siem Reap — disbursement at 86% warning</div><div class="alert-meta">2 days ago<span class="alert-channel">Email</span></div></div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot breach"></div>
+              <div><div style="font-size:13px;">Phnom Penh branch overall breach</div><div class="alert-meta">3 days ago<span class="alert-channel">Telegram</span><span class="alert-channel">Email</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: Threshold Management -->
+      <div class="page" id="page-threshold">
+        <div class="card" style="margin-bottom:14px;">
+          <div class="section-title" style="margin-bottom:14px;">Threshold rules</div>
+          <div class="table-wrap">
+            <table>
+              <colgroup><col style="width:22%"><col style="width:18%"><col style="width:16%"><col style="width:16%"><col style="width:16%"><col style="width:12%"></colgroup>
+              <thead><tr><th>Rule name</th><th>Metric</th><th>Applies to</th><th>Limit</th><th>Warning at</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Branch disbursement</td><td>Loan amount</td><td>Branch total</td><td>$500K</td><td>80%</td><td><span class="status-pill pill-safe">Active</span></td></tr>
+                <tr><td>SCO client cap</td><td># Clients</td><td>SCO position</td><td>120 clients</td><td>85%</td><td><span class="status-pill pill-safe">Active</span></td></tr>
+                <tr><td>CO client cap</td><td># Clients</td><td>CO position</td><td>80 clients</td><td>85%</td><td><span class="status-pill pill-safe">Active</span></td></tr>
+                <tr><td>JO client cap</td><td># Clients</td><td>JO position</td><td>40 clients</td><td>85%</td><td><span class="status-pill pill-safe">Active</span></td></tr>
+                <tr><td>SCO loan limit</td><td>Loan amount</td><td>SCO position</td><td>$80K</td><td>80%</td><td><span class="status-pill pill-warn">Paused</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title" style="margin-bottom:14px;">Add / edit threshold rule</div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Rule name</div><input type="text" value="Branch disbursement"></div>
+            <div class="form-group"><div class="form-label">Metric</div><select><option>Loan disbursement amount</option><option>Number of clients</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Applies to</div><select><option>Branch total</option><option>JO position</option><option>CO position</option><option>SCO position</option></select></div>
+            <div class="form-group"><div class="form-label">Hard limit</div><input type="number" value="500000"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Warning threshold (%)</div><input type="number" value="80"></div>
+            <div class="form-group"><div class="form-label">Alert channels</div><select><option>Telegram + Email</option><option>Telegram only</option><option>Email only</option></select></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <button class="btn-sm btn-primary">Save rule</button>
+            <button class="btn-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: Branch Dashboard (BM) -->
+      <div class="page" id="page-branch">
+        <div class="metrics-row">
+          <div class="metric-card"><div class="metric-label">Branch disbursement</div><div class="metric-value">$430K</div><div class="metric-sub warn">86% of $500K limit</div></div>
+          <div class="metric-card"><div class="metric-label">Total clients</div><div class="metric-value">342</div><div class="metric-sub ok">Within branch cap</div></div>
+          <div class="metric-card"><div class="metric-label">COs over limit</div><div class="metric-value danger">2</div><div class="metric-sub danger">Need attention</div></div>
+          <div class="metric-card"><div class="metric-label">My alerts</div><div class="metric-value">4</div><div class="metric-sub" style="color:var(--color-text-tertiary);">2 unread</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="section-title">CO performance — Siem Reap branch</div>
+            <table class="co-row">
+              <colgroup><col style="width:24%"><col style="width:14%"><col style="width:16%"><col style="width:30%"><col style="width:16%"></colgroup>
+              <thead><tr><th>Officer</th><th>Position</th><th>Clients</th><th>vs Limit</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Dara S.</td><td>SCO</td><td>118</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-warn" style="width:98%"></div></div><span style="font-size:11px;" class="warn">98%</span></div></td><td><span class="status-pill pill-warn">Warning</span></td></tr>
+                <tr><td>Maly K.</td><td>CO</td><td>54</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-safe" style="width:67%"></div></div><span style="font-size:11px;" class="ok">67%</span></div></td><td><span class="status-pill pill-safe">Safe</span></td></tr>
+                <tr><td>Bora T.</td><td>CO</td><td>83</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-breach" style="width:104%"></div></div><span style="font-size:11px;" class="danger">104%</span></div></td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+                <tr><td>Vanna P.</td><td>JO</td><td>28</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-safe" style="width:70%"></div></div><span style="font-size:11px;" class="ok">70%</span></div></td><td><span class="status-pill pill-safe">Safe</span></td></tr>
+                <tr><td>Chea L.</td><td>JO</td><td>41</td><td><div class="row-flex"><div class="progress-bg"><div class="progress-fill fill-breach" style="width:102%"></div></div><span style="font-size:11px;" class="danger">102%</span></div></td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="section-title">My alerts</div>
+            <div class="alert-item">
+              <div class="alert-dot breach"></div>
+              <div><div style="font-size:13px;font-weight:500;">Bora T. exceeded CO client limit</div><div class="alert-meta">Today, 10:02 AM · Unread<span class="alert-channel">Telegram</span></div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">83 clients vs 80 limit (CO position)</div></div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot breach"></div>
+              <div><div style="font-size:13px;font-weight:500;">Chea L. exceeded JO client limit</div><div class="alert-meta">Today, 09:45 AM · Unread<span class="alert-channel">Email</span></div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">41 clients vs 40 limit (JO position)</div></div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot warn"></div>
+              <div><div style="font-size:13px;">Dara S. approaching SCO limit</div><div class="alert-meta">Yesterday · Acknowledged<span class="alert-channel">Telegram</span></div></div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot warn"></div>
+              <div><div style="font-size:13px;">Branch disbursement at 80% warning</div><div class="alert-meta">2 days ago · Acknowledged<span class="alert-channel">Email</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: Alert Config -->
+      <div class="page" id="page-alerts">
+        <div class="card" style="margin-bottom:14px;">
+          <div class="section-title" style="margin-bottom:14px;">Alert recipient mapping</div>
+          <table>
+            <colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
+            <thead><tr><th>Branch</th><th>Branch Manager (BM)</th><th>Telegram handle</th><th>Email</th></tr></thead>
+            <tbody>
+              <tr><td>Phnom Penh</td><td>Ratha M.</td><td>@ratha_bm</td><td>ratha@mfi.com</td></tr>
+              <tr><td>Siem Reap</td><td>Bopha L.</td><td>@bopha_sr</td><td>bopha@mfi.com</td></tr>
+              <tr><td>Battambang</td><td>Sokha V.</td><td>@sokha_btb</td><td>sokha@mfi.com</td></tr>
+              <tr><td>Kampong Cham</td><td>Theary N.</td><td>@theary_kc</td><td>theary@mfi.com</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="section-title" style="margin-bottom:14px;">Alert settings</div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Alert mode</div><select><option>Real-time (immediate trigger)</option><option>Daily digest (end of day)</option></select></div>
+            <div class="form-group"><div class="form-label">Escalate to CEO when</div><select><option>Branch exceeds 100% of limit</option><option>Any breach</option><option>Never</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Telegram bot token</div><input type="text" value="7832910xxxx:AAFx_..."></div>
+            <div class="form-group"><div class="form-label">SMTP sender email</div><input type="text" value="alerts@mfi.com"></div>
+          </div>
+          <div style="margin-top:4px;display:flex;gap:8px;">
+            <button class="btn-sm btn-primary">Save settings</button>
+            <button class="btn-sm">Send test alert</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: Reports -->
+      <div class="page" id="page-reports">
+        <div class="metrics-row" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+          <div class="metric-card"><div class="metric-label">Total breaches (month)</div><div class="metric-value danger">11</div></div>
+          <div class="metric-card"><div class="metric-label">Alerts sent</div><div class="metric-value">18</div></div>
+          <div class="metric-card"><div class="metric-label">Resolved / acknowledged</div><div class="metric-value ok">14</div></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div class="section-title">Breach history log</div>
+            <button class="btn-sm">Export Excel</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <colgroup><col style="width:16%"><col style="width:20%"><col style="width:16%"><col style="width:18%"><col style="width:18%"><col style="width:12%"></colgroup>
+              <thead><tr><th>Date</th><th>Branch</th><th>CO</th><th>Metric</th><th>Value vs Limit</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Apr 08</td><td>Kampong Cham</td><td>Branch</td><td>Disbursement</td><td>$512K / $500K</td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+                <tr><td>Apr 08</td><td>Siem Reap</td><td>Bora T.</td><td># Clients</td><td>83 / 80</td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+                <tr><td>Apr 08</td><td>Siem Reap</td><td>Chea L.</td><td># Clients</td><td>41 / 40</td><td><span class="status-pill pill-breach">Breach</span></td></tr>
+                <tr><td>Apr 07</td><td>Phnom Penh</td><td>Dara S.</td><td># Clients</td><td>118 / 120</td><td><span class="status-pill pill-warn">Warning</span></td></tr>
+                <tr><td>Apr 05</td><td>Phnom Penh</td><td>Branch</td><td>Disbursement</td><td>$482K / $500K</td><td><span class="status-pill pill-warn">Warning</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const roles = {
+  crd: {
+    label: 'Credit Risk Dept.',
+    initials: 'SR',
+    name: 'Sophea R.',
+    primaryAction: '+ Add threshold',
+    nav: [
+      {id:'dashboard', icon:'▦', label:'System dashboard'},
+      {id:'threshold', icon:'⊟', label:'Threshold management'},
+      {id:'alerts', icon:'◎', label:'Alert configuration'},
+      {id:'reports', icon:'⊞', label:'Reports', badge:0},
+    ]
+  },
+  bm: {
+    label: 'Branch Manager',
+    initials: 'BL',
+    name: 'Bopha L.',
+    primaryAction: 'Acknowledge all',
+    nav: [
+      {id:'branch', icon:'▦', label:'Branch dashboard'},
+      {id:'alerts-bm', icon:'◎', label:'My alerts', badge:2},
+      {id:'reports', icon:'⊞', label:'Reports'},
+    ]
+  },
+  ceo: {
+    label: 'CEO',
+    initials: 'CK',
+    name: 'Chan K.',
+    primaryAction: 'Export summary',
+    nav: [
+      {id:'dashboard', icon:'▦', label:'Executive overview'},
+      {id:'reports', icon:'⊞', label:'Reports'},
+    ]
+  }
+};
+
+let currentRole = 'crd';
+let currentPage = 'dashboard';
+
+function renderNav(role) {
+  const nav = document.getElementById('nav');
+  const items = roles[role].nav;
+  nav.innerHTML = items.map(item => `
+    <div class="nav-item${item.id===currentPage?' active':''}" onclick="showPage('${item.id}',this)">
+      <span class="nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+      ${item.badge ? `<span class="badge-count">${item.badge}</span>` : ''}
+    </div>`).join('');
+}
+
+function showPage(id, el) {
+  const pageMap = {'alerts-bm':'branch'};
+  const actualId = pageMap[id] || id;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + actualId);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const titles = {
+    dashboard:'System dashboard', threshold:'Threshold management',
+    alerts:'Alert configuration', reports:'Reports',
+    branch: currentRole==='bm' ? 'Branch dashboard — Siem Reap' : 'Branch dashboard'
+  };
+  document.getElementById('page-title').textContent = titles[actualId] || actualId;
+  currentPage = id;
+}
+
+function setRole(role, btn) {
+  currentRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('avatar-initials').textContent = roles[role].initials;
+  document.getElementById('user-name').textContent = roles[role].name;
+  document.getElementById('user-role-label').textContent = roles[role].label;
+  document.getElementById('primary-action').textContent = roles[role].primaryAction;
+  const defaultPage = roles[role].nav[0].id;
+  currentPage = defaultPage;
+  renderNav(role);
+  const pageMap = {'alerts-bm':'branch'};
+  const actualId = pageMap[defaultPage] || defaultPage;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + actualId);
+  if(target) target.classList.add('active');
+  const titles = {dashboard:'System dashboard',threshold:'Threshold management',alerts:'Alert configuration',reports:'Reports',branch:'Branch dashboard — Siem Reap'};
+  document.getElementById('page-title').textContent = titles[actualId] || actualId;
+}
+
+renderNav('crd');
+</script>
